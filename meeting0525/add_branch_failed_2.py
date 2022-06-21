@@ -12,6 +12,8 @@ from urllib3 import Retry
 
 # add_0523_2_branch.py == add_branch.py
 
+# add_branch_failed_2.py == add_branch_failed_2_v2.py
+
 # 初期位置での迷路の様子
 
 # 図を描く大きさと、図の変数名を宣言
@@ -88,47 +90,27 @@ pi_0 = np.nan_to_num(theta_0)  # nanを0に変換
 
 # 初期の方策pi_0を表示
 pi_0
-# print(pi_0)
-PI = pi_0
 
 # 1step移動後の状態sを求める関数を定義
-
 state_history = [8]  # エージェントの移動を記録するリスト
-
-num=[3,2,1]
-num=[2,0,2]
-D = 0
 
 import random
 
 List_sub = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5]
-
 List = [0.8, 0.9, 1.0, 1.1, 1.2]
-
-
-
 SUM = 0
-
-SUM_change = np.zeros(shape=(100))
-
-
-TEST = np.zeros(shape=(500))
-diff = np.zeros(shape=(500))
-Diff2 = np.zeros(shape=(500))
+TEST = np.zeros(shape=(1500))
+diff = np.zeros(shape=(1500))
+Diff2 = np.zeros(shape=(1500))
 retry_num = 0
-Retry_sum = np.zeros(shape=(500))
-
+Retry_sum = np.zeros(shape=(1500))
 branch = [0, 0, 0]#np.zeros(shape=(3))
-
 true_list = [1, 1, 1]
 # Br = np.zeros(shape=(50))
-Br = np.zeros((200, 3))
-
-import math
+Br = np.zeros((1500, 3))
 
 def AAA(s,depth,i,j,SUM, retry_num):
     # direction = ["up", "right", "down", "left"]
-    print('s = {} depth : {}'.format(s, depth))
     if s == 1:
         branch[2] = 0
         # 追加
@@ -138,8 +120,9 @@ def AAA(s,depth,i,j,SUM, retry_num):
     
     if s == 8 or i > 500:
         if branch[0] == 1 and branch[1] == 1:
-            print('No.{} 発見 !'.format(s))
-            branch[j] = random.randint(0,1)
+            print('No.{} 発見 Goal ! j:{}'.format(s,j))
+            # branch[j] = 1 # random.randint(0,1)     # branch のランダムの回数が多い？
+            branch[2] = 1 # random.randint(0,1)     # branch のランダムの回数が多い？
             print("branch:{} j:{}".format(branch,j))
             Br[i] = branch
 
@@ -180,6 +163,7 @@ def AAA(s,depth,i,j,SUM, retry_num):
         Br[i] = branch
 
         if branch == true_list:
+            print('Goal 発見 !')
             print('終了!!!!')
             print('state_history={}'.format(state_history))
 
@@ -195,27 +179,86 @@ def AAA(s,depth,i,j,SUM, retry_num):
             excp = Exception()
             excp.value = state_history, SUM, retry_num
             raise excp
+        elif i > 500:
+            print('エラー')
+            excp = Exception()
+            excp.value = state_history, SUM, retry_num
+            raise excp
+
         else:
-            retry_num += 1
-            s_next = 0
+        # elif retry_num < 20:
+            retry_num += 1 # コメントアウト
+            
+            s_next = s - 3 # 0
             depth = 0
             SUM = 0
-            j = 0
+            j = 2 # j - 1 # j = 0 コメントアウト
+            print('s_next:{}'.format(s_next))
+            print('retry_num:{}'.format(retry_num))
             # branch[2] = 0
             # # 追加
             # branch[0] = 0
             # branch[1] = 0
+                                # if retry_num > 10: #20: # 40: # 追加②
+                                #     # state_history.append(s_next)
+                                #     s = s_next - 2
+                                #     # retry_num += 1
+
+                                #     s_next = s - 3 # 2
+                                #     depth = 0
+                                #     SUM = 0
+                                #     j = 0 # j - 1 # j = 0 コメントアウト
+                                # # if retry_num > 10: # 20: # 追加①
+                                # elif retry_num > 5: #10: # 20: # 追加①
+                                #     # state_history.append(s_next)
+                                #     s = s_next
+                                #     # retry_num += 1
+
+                                #     s_next = s - 2
+                                #     depth = 0
+                                #     SUM = 0
+                                #     j = 1 # j - 1 # j = 0 コメントアウト
+
+            # elif retry_num > 20: # 40: # 追加②
+            #     # state_history.append(s_next)
+            #     s = s_next-2
+            #     retry_num += 1
+            #     s_next = s - 2
+            #     depth = 0
+            #     SUM = 0
+            #     j = 0 # j - 1 # j = 0 コメントアウト
             
             AAA(s_next,depth,i,j,SUM, retry_num)
+        
+        # else:
+        #     retry_num += 1
+        #     s_next = s - 2
+        #     depth = 0
+        #     SUM = 0
+        #     j = 1 # j - 1 # j = 0 コメントアウト
+        #     print('s_next:{}'.format(s_next))
+        #     # branch[2] = 0
+        #     # # 追加
+        #     # branch[0] = 0
+        #     # branch[1] = 0
+            
+        #     AAA(s_next,depth,i,j,SUM, retry_num)
 
    
         
-    # if depth != 0 : # s_next = s　にする場合　これがないと一つのノードをずっとループしてしまう
-        
-        
+    # if depth != 0 :
+
+    # if node_retry <=5:
+    # if retry_num <=5:    # 0525 変更点　途中
     if pi_0[s,1] == 5:
             print('No.{} 発見 !'.format(s))
-            branch[j] = random.randint(0,1)
+
+
+            # if 00 == False: # 途中
+                # -----
+
+            # branch[j] = random.randint(0,1)
+            branch[j] = random.randint(1, 2)
             print("branch:{} j:{}".format(branch,j))
             Br[i] = branch
 
@@ -227,29 +270,17 @@ def AAA(s,depth,i,j,SUM, retry_num):
             diff[j] = abs(1.0 - test)
 
             SUM += diff[j]
-
-            # if SUM >= 0.5:
-            #     print('\n疑念0.5以上')
-            #     print('sum:{}\n'.format(SUM))
-            #     print('j={}'.format(j))
-
-            #     retry_num += 1
-            #     s_next = 0
-            #     depth = 0
-            #     SUM = 0
-            #     j = 0
-                
-            #     AAA(s_next,depth,i,j,SUM, retry_num)
-
-            # SUM = 0 reset コメントアウト
-            # print('j = {}'.format(j))
-
-            s_next = s + 1 # s これを s+1 にすれば、if depth != 0: はいらない　これを s にする場合はいる
-
+            s_next = s + 1 #+ 3
             state_history.append(s_next)
             
             depth = 0
             AAA(s_next,depth,i+1,j+1,SUM, retry_num)
+    # else:
+    #     s_next = s - 3
+    #     # node_retry += 1
+    #     retry_num += 1
+    #     AAA(s_next,depth,i,j,SUM, retry_num)
+
 
     Br[i] = branch
 
@@ -306,12 +337,13 @@ def init():
 #line1, = ax.plot([1.5], [2.5], marker="*", color='y', markersize=30)
 #line2, = ax.plot([1.5], [4.0], marker="d", color='r', markersize=10)
 
-SUM_2 = np.zeros(shape=(500))
+SUM_2 = np.zeros(shape=(1500))
 SUM_1 = 0
-SUM_3 = np.zeros(shape=(50))
+SUM_3 = np.zeros(shape=(1500))
 j = 0
-for i in range(len(state_history) - 1):  #いづれコメントアウト
-    if state_history[i] == 1:
+num = len(state_history) - 1
+for i in range(num):  #いづれコメントアウト
+    if state_history[i] == 8: # 1:
         SUM_3[j] = SUM_1
         j+=1
 
@@ -329,6 +361,10 @@ for i in range(len(state_history) - 1):  #いづれコメントアウト
 
         SUM_2[i] = Diff2[i] + SUM_1
 
+    print("Br:{}".format(Br[i]))
+
+# print('br:{}'.format(Br[num+1]))
+
     
 # print('retry:{} {}'.format(Retry_sum,retry_num))
 print('retry:{}'.format(retry_num-1))
@@ -345,6 +381,7 @@ def animate(i):
     z += Diff2[i]
 
     plt.title('SUM[{:.0f}回目]={:.2f}\nbranch:{}\nΔstress={:.2f}'.format(Retry_sum[i], SUM_2[i], Br[i], Diff2[i]))
+    # print("Br:{}".format(Br[i]))
 
     if state == 4:
         line1.set_data(x+0.2,y)

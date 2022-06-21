@@ -88,47 +88,28 @@ pi_0 = np.nan_to_num(theta_0)  # nanを0に変換
 
 # 初期の方策pi_0を表示
 pi_0
-# print(pi_0)
-PI = pi_0
 
 # 1step移動後の状態sを求める関数を定義
-
 state_history = [8]  # エージェントの移動を記録するリスト
-
-num=[3,2,1]
-num=[2,0,2]
-D = 0
 
 import random
 
 List_sub = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5]
-
 List = [0.8, 0.9, 1.0, 1.1, 1.2]
-
-
-
 SUM = 0
-
-SUM_change = np.zeros(shape=(100))
-
-
-TEST = np.zeros(shape=(500))
-diff = np.zeros(shape=(500))
-Diff2 = np.zeros(shape=(500))
+TEST = np.zeros(shape=(1500))
+diff = np.zeros(shape=(1500))
+Diff2 = np.zeros(shape=(1500))
 retry_num = 0
-Retry_sum = np.zeros(shape=(500))
-
+Retry_sum = np.zeros(shape=(1500))
 branch = [0, 0, 0]#np.zeros(shape=(3))
-
 true_list = [1, 1, 1]
 # Br = np.zeros(shape=(50))
-Br = np.zeros((200, 3))
-
-import math
+Br = np.zeros((1500, 3))
 
 def AAA(s,depth,i,j,SUM, retry_num):
     # direction = ["up", "right", "down", "left"]
-    print('s = {} depth : {}'.format(s, depth))
+    print('s:{}'.format(s))
     if s == 1:
         branch[2] = 0
         # 追加
@@ -180,6 +161,7 @@ def AAA(s,depth,i,j,SUM, retry_num):
         Br[i] = branch
 
         if branch == true_list:
+            print('Goal 発見 !')
             print('終了!!!!')
             print('state_history={}'.format(state_history))
 
@@ -195,12 +177,20 @@ def AAA(s,depth,i,j,SUM, retry_num):
             excp = Exception()
             excp.value = state_history, SUM, retry_num
             raise excp
+        elif i > 500:
+            print('エラー')
+            excp = Exception()
+            excp.value = state_history, SUM, retry_num
+            raise excp
+
         else:
             retry_num += 1
-            s_next = 0
+            s_next = s - 3 # 2 # 0
             depth = 0
             SUM = 0
             j = 0
+            # print('state_history={}'.format(state_history))
+            print('s_next:{}'.format(s_next))
             # branch[2] = 0
             # # 追加
             # branch[0] = 0
@@ -210,12 +200,15 @@ def AAA(s,depth,i,j,SUM, retry_num):
 
    
         
-    # if depth != 0 : # s_next = s　にする場合　これがないと一つのノードをずっとループしてしまう
+    # if depth != 0 :
+    # if i == 0:
+    #     state_history[0] = 0
         
         
     if pi_0[s,1] == 5:
             print('No.{} 発見 !'.format(s))
-            branch[j] = random.randint(0,1)
+            # branch[j] = random.randint(0,1)
+            branch[j] = random.randint(1, 2)
             print("branch:{} j:{}".format(branch,j))
             Br[i] = branch
 
@@ -227,26 +220,9 @@ def AAA(s,depth,i,j,SUM, retry_num):
             diff[j] = abs(1.0 - test)
 
             SUM += diff[j]
-
-            # if SUM >= 0.5:
-            #     print('\n疑念0.5以上')
-            #     print('sum:{}\n'.format(SUM))
-            #     print('j={}'.format(j))
-
-            #     retry_num += 1
-            #     s_next = 0
-            #     depth = 0
-            #     SUM = 0
-            #     j = 0
-                
-            #     AAA(s_next,depth,i,j,SUM, retry_num)
-
-            # SUM = 0 reset コメントアウト
-            # print('j = {}'.format(j))
-
-            s_next = s + 1 # s これを s+1 にすれば、if depth != 0: はいらない　これを s にする場合はいる
-
-            state_history.append(s_next)
+            s_next = s + 1 #+ 3
+            state_history.append(s_next) # (s)
+            # s_next = s + 1 # 元々は二行上
             
             depth = 0
             AAA(s_next,depth,i+1,j+1,SUM, retry_num)
@@ -306,9 +282,9 @@ def init():
 #line1, = ax.plot([1.5], [2.5], marker="*", color='y', markersize=30)
 #line2, = ax.plot([1.5], [4.0], marker="d", color='r', markersize=10)
 
-SUM_2 = np.zeros(shape=(500))
+SUM_2 = np.zeros(shape=(1500))
 SUM_1 = 0
-SUM_3 = np.zeros(shape=(50))
+SUM_3 = np.zeros(shape=(150))
 j = 0
 for i in range(len(state_history) - 1):  #いづれコメントアウト
     if state_history[i] == 1:
@@ -362,7 +338,7 @@ def animate(i):
 
 #　初期化関数とフレームごとの描画関数を用いて動画を作成する
 anim = animation.FuncAnimation(fig, animate, init_func=init, frames=len(
-    state_history), interval=200, repeat=False)
+    state_history), interval=100, repeat=False)
 
 HTML(anim.to_jshtml())
 plt.show()

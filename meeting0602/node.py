@@ -17,7 +17,7 @@ node = [0, 0, 0]
 def update(i):
     plt.cla()
 
-    if i %10 == 0:
+    if i %10 == 0: # Node一致
         node[0] += 1
 
     # # rand = random.randint(0, 5)

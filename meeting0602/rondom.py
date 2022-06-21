@@ -24,3 +24,9 @@ print((1/2) ** times)
 import numpy as np
 x = np.arange(1.1, 30)
 print(x)
+
+
+
+
+random_pm = random.randint(2,5)
+print(random_pm)

@@ -53,90 +53,49 @@ line7, = ax.plot([0.5], [0.5], marker=">", color='g', markersize=20)
 # 初期の方策を決定するパラメータtheta_0を設定
 
 # 行は状態0～7、列は移動方向で↑、→、↓、←を表す
-theta_0 = np.array([[1, np.nan, np.nan, np.nan],  # s0
-                    [1, np.nan, np.nan, np.nan],  # s1
-                    [1, np.nan, np.nan, np.nan],  # s2
-                    [1, np.nan, np.nan, np.nan],  # s3
-                    [1, 5, np.nan, np.nan],  # s4
-                    [1, np.nan, np.nan, np.nan],  # s5
-                    [1, 5, np.nan, np.nan],  # s6
-                    [1, np.nan, np.nan, np.nan],  # s7、※ LandMark
-                    [1, 5, np.nan, np.nan]  #s8
+theta_0 = np.array([[1, np.nan, np.nan, np.nan],  # s1
+                    [1, np.nan, np.nan, np.nan], 
+                    [1, 5, np.nan, np.nan],  # s2
+                    [1, np.nan, np.nan, np.nan],
+                    [1, 5, np.nan, np.nan]  #s3
                     ])
-
-# 方策パラメータthetaを行動方策piに変換する関数の定義
-
-
-def simple_convert_into_pi_from_theta(theta):
-    '''単純に割合を計算する'''
-
-    [m, n] = theta.shape  # thetaの行列サイズを取得
-    pi = np.zeros((m, n))
-    for i in range(0, m):
-        pi[i, :] = theta[i, :] / np.nansum(theta[i, :])  # 割合の計算
-
-    pi = np.nan_to_num(pi)  # nanを0に変換
-
-    return pi
 
 
 # 初期の方策pi_0を求める
-# pi_0 = simple_convert_into_pi_from_theta(theta_0)
 [m, n] = theta_0.shape  # thetaの行列サイズを取得
-# pi_0 = np.zeros((m, n))
 pi_0 = np.nan_to_num(theta_0)  # nanを0に変換
 
 # 初期の方策pi_0を表示
 pi_0
-# print(pi_0)
-PI = pi_0
 
 # 1step移動後の状態sを求める関数を定義
-
-state_history = [8]  # エージェントの移動を記録するリスト
-
-num=[3,2,1]
-num=[2,0,2]
-D = 0
+state_history = [4]  # エージェントの移動を記録するリスト
 
 import random
 
 List_sub = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5]
-
 List = [0.8, 0.9, 1.0, 1.1, 1.2]
-
-
-
 SUM = 0
-
-SUM_change = np.zeros(shape=(100))
-
-
 TEST = np.zeros(shape=(500))
 diff = np.zeros(shape=(500))
 Diff2 = np.zeros(shape=(500))
 retry_num = 0
 Retry_sum = np.zeros(shape=(500))
-
 branch = [0, 0, 0]#np.zeros(shape=(3))
-
 true_list = [1, 1, 1]
 # Br = np.zeros(shape=(50))
 Br = np.zeros((200, 3))
 
-import math
-
 def AAA(s,depth,i,j,SUM, retry_num):
     # direction = ["up", "right", "down", "left"]
-    print('s = {} depth : {}'.format(s, depth))
-    if s == 1:
+    if s == 0:
         branch[2] = 0
         # 追加
         branch[0] = 0
         branch[1] = 0
 
     
-    if s == 8 or i > 500:
+    if s == 4 or i > 500:
         if branch[0] == 1 and branch[1] == 1:
             print('No.{} 発見 !'.format(s))
             branch[j] = random.randint(0,1)
@@ -150,33 +109,7 @@ def AAA(s,depth,i,j,SUM, retry_num):
         diff[j] = abs(1.0 - test)
         SUM += diff[j]
 
-        # if SUM >=0.5:
-        # if SUM >=0.5:
-        #     print('\n疑念0.5以上')
-        #     print('sum:{}\n'.format(SUM))
-        #     print('j={}'.format(j))
-
-        #     retry_num += 1
-        #     s_next = 0
-        #     depth = 0
-        #     SUM = 0
-        #     j = 0
-            
-        #     AAA(s_next,depth,i,j,SUM, retry_num)
-        # else:
-        #     print('\n疑念0.5以下')
-        #     # print('diff:{}'.format(diff))
-        #     print('sum:{}\n'.format(SUM))
-        #     print('j={} TEST = {}'.format(j,TEST))
-        #     print('Diff2:{}'.format(Diff2))
-
-        #     print('終了!!!!')
-        #     print('state_history={}'.format(state_history))
-        #     retry_num += 1
-
-        #     excp = Exception()
-        #     excp.value = state_history, SUM, retry_num
-        #     raise excp
+        
         Br[i] = branch
 
         if branch == true_list:
@@ -210,12 +143,13 @@ def AAA(s,depth,i,j,SUM, retry_num):
 
    
         
-    # if depth != 0 : # s_next = s　にする場合　これがないと一つのノードをずっとループしてしまう
+    if depth != 0 :
         
         
-    if pi_0[s,1] == 5:
+        if pi_0[s,1] == 5:
             print('No.{} 発見 !'.format(s))
-            branch[j] = random.randint(0,1)
+            # branch[j] = random.randint(0,1)
+            branch[j] = random.randint(1, 2)
             print("branch:{} j:{}".format(branch,j))
             Br[i] = branch
 
@@ -228,24 +162,8 @@ def AAA(s,depth,i,j,SUM, retry_num):
 
             SUM += diff[j]
 
-            # if SUM >= 0.5:
-            #     print('\n疑念0.5以上')
-            #     print('sum:{}\n'.format(SUM))
-            #     print('j={}'.format(j))
-
-            #     retry_num += 1
-            #     s_next = 0
-            #     depth = 0
-            #     SUM = 0
-            #     j = 0
-                
-            #     AAA(s_next,depth,i,j,SUM, retry_num)
-
-            # SUM = 0 reset コメントアウト
-            # print('j = {}'.format(j))
-
-            s_next = s + 1 # s これを s+1 にすれば、if depth != 0: はいらない　これを s にする場合はいる
-
+            
+            s_next = s #+ 3
             state_history.append(s_next)
             
             depth = 0
@@ -278,7 +196,7 @@ def AAA_top(s,depth):
 
 def goal_maze(pi):
     s = 0  # スタート地点
-    state_history = [8]  # エージェントの移動を記録するリスト
+    state_history = [4]  # エージェントの移動を記録するリスト
     state_history,SUM, retry_num = AAA_top(s,0) # s = 1
     
     return state_history,SUM, retry_num
@@ -346,11 +264,11 @@ def animate(i):
 
     plt.title('SUM[{:.0f}回目]={:.2f}\nbranch:{}\nΔstress={:.2f}'.format(Retry_sum[i], SUM_2[i], Br[i], Diff2[i]))
 
-    if state == 4:
-        line1.set_data(x+0.2,y)
-    elif state == 6:
+    # if state == 1:
+    #     line1.set_data(x+0.2,y)
+    if state == 2:
         line2.set_data(x+0.2,y)
-    elif state == 8:
+    elif state == 3:
         line7.set_data(x+0.2,y)
     else:
         line1.set_data(0.5,-0.5)
