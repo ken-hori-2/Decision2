@@ -8,7 +8,7 @@ def perceptron(x1, x2):
 	else:
 		return 1
 
-# print(perceptron(1, 1))
+print("perceptron = {}".format(perceptron(1, 1)))
 
 import numpy as np
 import matplotlib.pyplot as plt
