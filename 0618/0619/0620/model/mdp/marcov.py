@@ -33,11 +33,15 @@ class Solver(object):
 
 if __name__ == '__main__':
 
-    P = np.array([[.5,.4,.1],
-                  [.3,.4,.3],
-                  [.2,.3,.5]])
-    cond_li = ['良い', '普通', '悪い']
-    current = 2
+    # P = np.array([[.5,.4,.1],
+    #               [.3,.4,.3],
+    #               [.2,.3,.5]])
+    P = np.array([[1/2,1/3,1/6],
+                  [1/6,1/3,1/2],
+                  [1/6,1/3,1/2]])
+    # cond_li = ['良い', '普通', '悪い']
+    cond_li = ['晴れ', '曇り', '雨']
+    current = 0 #2
 
     svr = Solver(P, cond_li, current)
     print(f'result: {svr.get_result()}')
